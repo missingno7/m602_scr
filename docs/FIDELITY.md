@@ -25,11 +25,11 @@ frames; the renderer only reads it.
 
 | Original | Replacement |
 |---|---|
-| BIOS tick count `0:046C` (18.2065 Hz, wraps at 1800B0h) | computed from the monotonic clock, phase from the time of day (`src/biostime.h`) |
+| BIOS tick count `0:046C` (18.2065 Hz, wraps at 1800B0h) | computed from the monotonic clock, phase from the time of day (`src/biostime.h`; `winmachine.h`, `posixmachine.h`) |
 | INT 28h in Pause's busy-wait | sleep until the next tick; Pause's exit depends only on the tick count, so frames happen at the same ticks without using the CPU |
 | other INT 28h calls | omitted (no observable effect) |
 | DOS GetDate / GetTime | local time |
-| `Application^.GetEvent` | input events from the window |
+| `Application^.GetEvent` | input events from the window on Windows; on macOS the system ends the saver |
 | VGA scan-out | `src/renderer.cpp` |
 | cursor parking, mouse hiding | no text cursor drawn; mouse pointer hidden |
 

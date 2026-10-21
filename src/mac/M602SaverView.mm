@@ -192,7 +192,7 @@ uint32_t FromColor(NSColor* color) {
     CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     CGDataProviderRef data = CGDataProviderCreateWithData(nullptr, _renderer.Pixels(), w * h * 4, nullptr);
     CGImageRef image = CGImageCreate(w, h, 8, 32, w * 4, space,
-                                     kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst, data, nullptr,
+                                     CGBitmapInfo(kCGBitmapByteOrder32Little) | CGBitmapInfo(kCGImageAlphaNoneSkipFirst), data, nullptr,
                                      false, kCGRenderingIntentDefault);
     CGContextSetInterpolationQuality(ctx, kCGInterpolationNone);
     CGContextDrawImage(ctx, self.bounds, image);

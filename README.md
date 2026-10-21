@@ -3,7 +3,7 @@
 ![M602 Screensaver](docs/screenshot.png)
 
 The screen saver of Software602 **Manažer M602 v2.00** (DOS, 1991–92) as a
-native Windows screen saver: three boxes, `Software602`, the date and the
+native Windows and macOS screen saver: three boxes, `Software602`, the date and the
 time, drifting over a black VGA text screen.
 
 It is made from the [matching decompilation of the original
@@ -27,10 +27,17 @@ what was translated, replaced or adapted, and the evidence for it.
 
 ## Install
 
-Download `M602Saver.scr` from the [latest
-release](https://github.com/missingno7/m602_scr/releases/latest), right-click it and choose
-**Install**, or copy it to `C:\Windows\System32` and select it in *Screen
-saver settings*.
+Download from the [latest release](https://github.com/missingno7/m602_scr/releases/latest).
+
+**Windows:** right-click `M602Saver.scr` and choose **Install**.
+
+**macOS 11 or newer:** unzip `M602Saver-macOS.zip` and double-click
+`M602Saver.saver`. The bundle is not notarized, so macOS blocks it at first.
+Allow it in *System Settings → Privacy & Security*, or run:
+
+```bash
+xattr -dr com.apple.quarantine M602Saver.saver
+```
 
 ## Settings
 
@@ -43,26 +50,28 @@ saver settings*.
 
 ## Build
 
-Visual Studio 2022 or newer with C++, CMake 3.21 or newer:
+CMake 3.21 or newer with Visual Studio 2022+ (Windows) or Xcode command line
+tools (macOS):
 
 ```bash
-cmake -S . -B build -A x64 -DM602_EXE=path/to/M602X.EXE
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DM602_EXE=path/to/M602X.EXE
 ```
 
 ```bash
 cmake --build build --config Release
 ```
 
-```bash
-build/Release/saver_tests.exe
-```
+The result is `build/Release/M602Saver.scr` on Windows and
+`build/M602Saver.saver` on macOS.
 
-`M602_EXE` points to an original `M602X.EXE`; the build takes M602's KeybCS
-font from it. Without it, the IBM VGA font in `assets/` is used.
+`M602_EXE` points to an original `M602X.EXE`, and the build takes M602's
+KeybCS font from it. Without it, the IBM VGA font in `assets/` is used.
+GitHub Actions builds both platforms; it uses M602's font when the
+`M602_FONT_B64` secret holds it.
 
 ## Tests
 
-`saver_tests` replays the reference traces in `tests/dosref`, 6,300 frames
+`saver_tests` (in the build directory) replays the reference traces in `tests/dosref`, 6,300 frames
 recorded from the reconstructed `SAVER.PAS` running under Turbo Pascal 6.01,
 and compares the full saver state and screen after every frame. It also tests
 the random number generator, BIOS-tick timing and the renderer. The traces are

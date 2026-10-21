@@ -10,6 +10,11 @@
 #include <ctime>
 #include <thread>
 
+#ifdef __APPLE__
+#include <mach/mach_time.h>
+#include <pthread.h>
+#endif
+
 #include "biostime.h"
 #include "saver.h"
 
@@ -35,8 +40,21 @@ public:
     void Int28() override {
         uint64_t next = (PitNow() / biostime::kClocksPerTick + 1) * biostime::kClocksPerTick;
         uint64_t realClocks = ((next - pit0_) * 100 + speed_ - 1) / speed_;
-        std::this_thread::sleep_until(
-            start_ + std::chrono::nanoseconds(biostime::CountsFromPitClocks(realClocks, 1000000000)));
+        auto target = start_ + std::chrono::nanoseconds(biostime::CountsFromPitClocks(realClocks, 1000000000));
+#ifdef __APPLE__
+        // Plain sleeps get timer-coalescing leeway on macOS and wake late;
+        // mach_wait_until on a user-interactive thread does not.
+        static thread_local bool interactive = pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0) == 0;
+        (void)interactive;
+        auto remaining = target - std::chrono::steady_clock::now();
+        if (remaining <= remaining.zero()) return;
+        mach_timebase_info_data_t tb;
+        mach_timebase_info(&tb);
+        uint64_t ns = uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(remaining).count());
+        mach_wait_until(mach_absolute_time() + ns * tb.denom / tb.numer);
+#else
+        std::this_thread::sleep_until(target);
+#endif
     }
 
     void GetDate(uint16_t& year, uint16_t& month, uint16_t& day, uint16_t& dayOfWeek) override {
