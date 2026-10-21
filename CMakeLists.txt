@@ -56,4 +56,7 @@ add_executable(saver_tests tests/saver_tests.cpp)
 target_link_libraries(saver_tests PRIVATE m602core)
 target_compile_definitions(saver_tests PRIVATE
     TRACE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/dosref")
+if(MSVC)
+    target_compile_definitions(saver_tests PRIVATE _CRT_SECURE_NO_WARNINGS)  # getenv
+endif()
 add_test(NAME saver_tests COMMAND saver_tests)
