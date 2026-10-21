@@ -1,0 +1,61 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# M602's KeybCS font is not in the repository.  If the M602_FONT_B64 secret
+# holds it (base64 of the 4096 bytes), builds use it; otherwise the IBM font.
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Font
+        shell: bash
+        env:
+          M602_FONT_B64: ${{ secrets.M602_FONT_B64 }}
+        run: |
+          if [ -n "$M602_FONT_B64" ]; then
+            echo "$M602_FONT_B64" | base64 --decode > m602font.bin
+            echo "FONT_ARG=-DM602_FONT_BIN:FILEPATH=m602font.bin" >> "$GITHUB_ENV"
+          fi
+      - run: cmake -S . -B build -A x64 ${{ env.FONT_ARG }}
+      - run: cmake --build build --config Release
+      - run: build/Release/saver_tests.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: M602Saver-windows
+          path: build/Release/M602Saver.scr
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Font
+        env:
+          M602_FONT_B64: ${{ secrets.M602_FONT_B64 }}
+        run: |
+          if [ -n "$M602_FONT_B64" ]; then
+            echo "$M602_FONT_B64" | base64 --decode > m602font.bin
+            echo "FONT_ARG=-DM602_FONT_BIN:FILEPATH=m602font.bin" >> "$GITHUB_ENV"
+          fi
+      - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" $FONT_ARG
+      - run: cmake --build build -j 4
+      - run: build/saver_tests
+      - name: Sign and package
+        run: |
+          codesign --force --deep --sign - build/M602Saver.saver
+          ditto -c -k --keepParent build/M602Saver.saver M602Saver-macOS.zip
+      - name: Smoke test
+        run: build/mac_smoke build/M602Saver.saver frame.png sheet.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: M602Saver-macos
+          path: |
+            M602Saver-macOS.zip
+            frame.png
+            sheet.png

@@ -80,8 +80,7 @@ struct Frame : SaverLocals {
 
     // procedure Draw   ovl:61:0121
     void Draw() {
-#pragma warning(suppress : 4458)  // Draw declares its own I, as in the Pascal
-        int16_t I, J;
+        int16_t I, J;  // Draw's own I, J, as in the Pascal
         uint16_t Year, MonthOrMinute, Day, Hour, Second, WeekdayOrFraction;
         // Erase pass: only the trailing column / row each box leaves behind.
         for (I = 1; I <= 3; ++I) {

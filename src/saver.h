@@ -35,6 +35,9 @@ struct SaverLocals {
     uint16_t Cycle;
 };
 
+// Turbo Vision TEvent.What values.
+constexpr uint16_t evKeyDown = 0x0010, evCommand = 0x0100;
+
 class Machine {
 public:
     virtual ~Machine() = default;

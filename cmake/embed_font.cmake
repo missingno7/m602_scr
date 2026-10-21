@@ -1,10 +1,12 @@
 # Generates font_data.cpp with the 8x16 character set.
 #
-# M602 loads its own KeybCS character set into the VGA.  With M602_EXE set to
-# an original M602X.EXE (Manazer M602 v2.00) that font is extracted from it;
-# otherwise the IBM VGA ROM font from assets/ is used.
+# M602 loads its own KeybCS character set into the VGA.  It is taken from
+# M602_EXE (an original M602X.EXE, Manazer M602 v2.00) or M602_FONT_BIN (the
+# same 4096 bytes extracted to a file); otherwise the IBM VGA ROM font from
+# assets/ is used.
 
 set(M602_EXE "" CACHE FILEPATH "Original M602X.EXE to take the KeybCS font from (optional)")
+set(M602_FONT_BIN "" CACHE FILEPATH "The KeybCS font extracted from M602X.EXE (optional)")
 
 function(m602_generate_font out_file)
     if(M602_EXE)
@@ -14,6 +16,14 @@ function(m602_generate_font out_file)
         endif()
         # KeybCS 8x16 font: 4096 bytes at file offset BEF9Fh.
         file(READ "${M602_EXE}" hex OFFSET 782239 LIMIT 4096 HEX)
+    elseif(M602_FONT_BIN)
+        file(SHA256 "${M602_FONT_BIN}" font_hash)
+        if(NOT font_hash STREQUAL "ffa2eaf4b19124b6437685f91df6234534910a0cb90c9fac05c1bb8071a6095d")
+            message(FATAL_ERROR "M602_FONT_BIN is not the KeybCS font from M602X.EXE")
+        endif()
+        file(READ "${M602_FONT_BIN}" hex HEX)
+    endif()
+    if(hex)
         message(STATUS "Font: M602 KeybCS 8x16")
     else()
         file(READ "${CMAKE_CURRENT_SOURCE_DIR}/assets/vga_ibm_8x16.bin" hex HEX)

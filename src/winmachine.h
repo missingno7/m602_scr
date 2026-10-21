@@ -17,7 +17,6 @@
 #include "saver.h"
 
 constexpr UINT WM_APP_FRAME = WM_APP + 1;  // saver thread drew a frame
-constexpr uint16_t evKeyDown = 0x0010, evCommand = 0x0100;  // Turbo Vision TEvent.What
 
 class WinMachine : public Machine {
 public:

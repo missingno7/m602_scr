@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "resource.h"
+#include "version.h"
 
 STRINGTABLE
 BEGIN
@@ -7,8 +8,8 @@ BEGIN
 END
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1, 0, 0, 0
-PRODUCTVERSION 1, 0, 0, 0
+FILEVERSION M602_VERSION_MAJOR, M602_VERSION_MINOR, 0, 0
+PRODUCTVERSION M602_VERSION_MAJOR, M602_VERSION_MINOR, 0, 0
 FILEOS VOS_NT_WINDOWS32
 FILETYPE VFT_APP
 BEGIN
@@ -17,9 +18,9 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "FileDescription", "M602 Screensaver"
-            VALUE "FileVersion", "1.0"
+            VALUE "FileVersion", M602_VERSION_STRING
             VALUE "ProductName", "M602 Screensaver"
-            VALUE "ProductVersion", "1.0"
+            VALUE "ProductVersion", M602_VERSION_STRING
             VALUE "OriginalFilename", "M602Saver.scr"
         END
     END
