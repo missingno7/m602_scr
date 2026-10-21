@@ -44,16 +44,6 @@ jobs:
           fi
       - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" $FONT_ARG
       - run: cmake --build build -j 4
-      - name: Diagnostic - host sleep accuracy
-        run: |
-          python3 -c "
-          import time
-          late = []
-          for _ in range(100):
-              t = time.perf_counter(); time.sleep(0.05); late.append((time.perf_counter() - t - 0.05) * 1000)
-          late.sort()
-          print(f'sleep(50 ms) overshoot: median {late[50]:.2f} ms, p90 {late[90]:.2f} ms, max {late[-1]:.2f} ms')
-          "
       - run: build/saver_tests
       - name: Sign and package
         run: |
