@@ -233,7 +233,7 @@ uint32_t FromColor(NSColor* color) {
     };
     auto button = [&](NSString* title, CGFloat x, SEL action) {
         NSButton* b = [NSButton buttonWithTitle:title target:self action:action];
-        b.frame = NSMakeRect(x, 16, 100, 32);
+        b.frame = NSMakeRect(x, 16, 92, 32);
         [v addSubview:b];
         return b;
     };
@@ -260,7 +260,7 @@ uint32_t FromColor(NSColor* color) {
 
     button(@"Defaults", 14, @selector(defaults:));
     button(@"Cancel", 176, @selector(cancel:)).keyEquivalent = @"\e";
-    button(@"OK", 266, @selector(ok:)).keyEquivalent = @"\r";
+    button(@"OK", 274, @selector(ok:)).keyEquivalent = @"\r";
 }
 
 - (void)showSettings:(const Settings&)s {
