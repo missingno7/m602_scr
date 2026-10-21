@@ -1,0 +1,12 @@
+#pragma once
+
+#define IDS_DESCRIPTION 1
+#define IDD_CONFIG 2003
+
+#define IDC_SPEED 1001
+#define IDC_SPEED_LABEL 1002
+#define IDC_COLOR 1003
+#define IDC_COLOR_ORIGINAL 1004
+#define IDC_SCANLINES 1005
+#define IDC_TEXTAREA 1006
+#define IDC_DEFAULTS 1007
